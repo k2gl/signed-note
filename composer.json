@@ -1,6 +1,6 @@
 {
   "name": "k2gl/signed-note",
-  "description": "Parse, verify and sign signed notes — the transparency-log / Go sumdb format used by Sigstore Rekor checkpoints — in PHP.",
+  "description": "Parse, verify and sign signed notes — the transparency-log / Go sumdb format used by Sigstore Rekor checkpoints — in PHP",
   "homepage": "https://github.com/k2gl/signed-note",
   "type": "library",
   "license": "MIT",
