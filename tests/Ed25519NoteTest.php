@@ -67,28 +67,29 @@ final class Ed25519NoteTest extends TestCase
 
     public function testRejectsTamperedText(): void
     {
+        // arrange
         $note = SignerKey::fromString(self::SKEY)->sign("hello\n");
         $tampered = new Note("HELLO\n", $note->signatures);
 
-        $this->expectException(SignatureVerificationFailed::class);
-
-        (new NoteVerifier(VerifierKey::fromString(self::VKEY)))->verify($tampered);
+        // act + assert
+        fact(static fn () => (new NoteVerifier(VerifierKey::fromString(self::VKEY)))->verify($tampered))
+            ->throws(SignatureVerificationFailed::class);
     }
 
     public function testRejectsWhenNoKnownKeyMatches(): void
     {
+        // arrange
         $note = SignerKey::fromString(self::SKEY)->sign("hello\n");
         $stranger = VerifierKey::ed25519('Stranger', str_repeat("\x01", 32));
 
-        $this->expectException(SignatureVerificationFailed::class);
-
-        (new NoteVerifier($stranger))->verify($note);
+        // act + assert
+        fact(static fn () => (new NoteVerifier($stranger))->verify($note))->throws(SignatureVerificationFailed::class);
     }
 
     public function testFromStringRejectsKeyHashMismatch(): void
     {
-        $this->expectException(InvalidNoteException::class);
-
-        VerifierKey::fromString('PeterNeumann+00000000+ARpc2QcUPDhMQegwxbzhKqiBfsVkmqq/LDE4izWy10TW');
+        // act + assert
+        fact(static fn () => VerifierKey::fromString('PeterNeumann+00000000+ARpc2QcUPDhMQegwxbzhKqiBfsVkmqq/LDE4izWy10TW'))
+            ->throws(InvalidNoteException::class);
     }
 }

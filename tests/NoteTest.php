@@ -39,22 +39,21 @@ final class NoteTest extends TestCase
 
     public function testRejectsNoteWithoutBlankLine(): void
     {
-        $this->expectException(InvalidNoteException::class);
-
-        Note::parse("just text with no separator\n\u{2014} Bob AAAAAAAA\n");
+        // act + assert
+        fact(static fn () => Note::parse("just text with no separator\n\u{2014} Bob AAAAAAAA\n"))
+            ->throws(InvalidNoteException::class);
     }
 
     public function testRejectsSignatureLineWithoutEmDash(): void
     {
-        $this->expectException(InvalidNoteException::class);
-
-        Note::parse('text' . "\n\n" . 'Bob ' . base64_encode(str_repeat("\x00", 68)) . "\n");
+        // act + assert
+        fact(static fn () => Note::parse('text' . "\n\n" . 'Bob ' . base64_encode(str_repeat("\x00", 68)) . "\n"))
+            ->throws(InvalidNoteException::class);
     }
 
     public function testRejectsNoteWithNoSignatures(): void
     {
-        $this->expectException(InvalidNoteException::class);
-
-        Note::parse("text\n\n");
+        // act + assert
+        fact(static fn () => Note::parse("text\n\n"))->throws(InvalidNoteException::class);
     }
 }

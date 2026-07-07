@@ -43,6 +43,7 @@ final class EcdsaNoteTest extends TestCase
 
     public function testRejectsWrongEcdsaKey(): void
     {
+        // arrange
         $key = openssl_pkey_new(['private_key_type' => OPENSSL_KEYTYPE_EC, 'curve_name' => 'prime256v1']);
         fact($key)->notFalse();
         $pem = (string) openssl_pkey_get_details($key)['key'];
@@ -58,9 +59,9 @@ final class EcdsaNoteTest extends TestCase
         $keyHash = substr((string) hex2bin(hash('sha256', self::der($other))), 0, 4);
         $envelope = $text . "\n\u{2014} {$origin} " . base64_encode($keyHash . $signature) . "\n";
 
-        $this->expectException(\K2gl\SignedNote\Exception\SignatureVerificationFailed::class);
-
-        (new NoteVerifier(VerifierKey::fromPem($origin, $other)))->verify(Note::parse($envelope));
+        // act + assert
+        fact(static fn () => (new NoteVerifier(VerifierKey::fromPem($origin, $other)))->verify(Note::parse($envelope)))
+            ->throws(\K2gl\SignedNote\Exception\SignatureVerificationFailed::class);
     }
 
     private static function der(string $pem): string
