@@ -23,10 +23,10 @@ final class NoteTest extends TestCase
         $note = Note::parse("line one\nline two\n\n\u{2014} Alice {$blob}\n");
 
         fact($note->signedText())->is("line one\nline two\n");
-        fact(count($note->signatures))->is(1);
+        fact($note->signatures)->count(1);
         fact($note->signatures[0]->name)->is('Alice');
-        fact(strlen($note->signatures[0]->keyHash))->is(4);
-        fact(strlen($note->signatures[0]->signature))->is(64);
+        fact($note->signatures[0]->keyHash)->hasLength(4);
+        fact($note->signatures[0]->signature)->hasLength(64);
     }
 
     public function testToStringRoundTrips(): void

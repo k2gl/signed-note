@@ -52,7 +52,7 @@ final class Ed25519NoteTest extends TestCase
 
         $verified = (new NoteVerifier(VerifierKey::fromString(self::VKEY)))->verify(Note::parse($envelope));
 
-        fact(count($verified))->is(1);
+        fact($verified)->count(1);
         fact($verified[0]->name)->is('PeterNeumann');
     }
 
@@ -62,7 +62,7 @@ final class Ed25519NoteTest extends TestCase
 
         $verified = (new NoteVerifier(VerifierKey::fromString(self::VKEY)))->verify($note);
 
-        fact(count($verified))->is(1);
+        fact($verified)->count(1);
     }
 
     public function testRejectsTamperedText(): void
