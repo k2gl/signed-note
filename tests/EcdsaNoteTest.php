@@ -37,7 +37,7 @@ final class EcdsaNoteTest extends TestCase
 
         $verified = (new NoteVerifier(VerifierKey::fromPem($origin, $pem)))->verify(Note::parse($envelope));
 
-        fact(count($verified))->is(1);
+        fact($verified)->count(1);
         fact($verified[0]->name)->is($origin);
     }
 
