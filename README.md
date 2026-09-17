@@ -55,6 +55,34 @@ $log = VerifierKey::fromPem('rekor.sigstore.dev - 1193050959916656506', $logPubl
 (new NoteVerifier($log))->verify(Note::parse($checkpoint));
 ```
 
+## Checkpoints
+
+A transparency log publishes its head as a checkpoint: a note whose text is the
+log's origin, the tree size and the base64 root hash, one per line (further lines
+are extensions). `Checkpoint` reads those three lines; the signatures stay the
+note's, so it is verified with the log's key like any other note.
+
+```php
+use K2gl\SignedNote\Checkpoint;
+use K2gl\SignedNote\NoteVerifier;
+use K2gl\SignedNote\VerifierKey;
+
+$checkpoint = Checkpoint::parse($envelope);
+
+$checkpoint->origin;     // "log2025-1.rekor.sigstore.dev"
+$checkpoint->treeSize;   // 114068855
+$checkpoint->rootHash;   // raw 32 bytes
+$checkpoint->extensions; // any lines after the first three
+
+$log = VerifierKey::ed25519($checkpoint->origin, $rawEd25519PublicKey); // a Rekor v2 log
+$checkpoint->verify(new NoteVerifier($log)); // SignatureVerificationFailed otherwise
+```
+
+A Rekor v2 log signs with an Ed25519 key whose hash is the note one (origin plus
+key), hence `VerifierKey::ed25519()`; a Rekor v1 log's ECDSA key is `fromPem()` as
+above. The test suite reads a real `log2025-1.rekor.sigstore.dev` checkpoint and
+verifies it against the key from Sigstore's trusted root.
+
 ## Sign
 
 ```php
@@ -71,8 +99,8 @@ The output is byte-for-byte what Go's `note.Sign` produces (checked against the
 
 ## Design
 
-- **Format only.** `Note` is the generic note; it does not interpret checkpoint
-  fields (origin, tree size, root hash). Parse those from `signedText()` yourself.
+- **Two layers.** `Note` is the generic note and knows nothing about logs;
+  `Checkpoint` adds the meaning of the first three lines and nothing else.
 - **Fail-closed.** A verified result means a trusted key signed the exact text.
 - **Ed25519 is the standard.** `VerifierKey::fromString()` / `SignerKey` handle the
   Ed25519 key strings from Go's `note` package; `fromPem()` covers ECDSA/RSA logs.

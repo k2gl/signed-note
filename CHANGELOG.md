@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0
+
+- Add `Checkpoint` — a note read as a transparency-log head: `origin`, `treeSize`,
+  `rootHash` and any extension lines, with `verify()` delegating to `NoteVerifier`.
+  Parsed fail-closed (three lines at least, a decimal tree size, base64 root hash)
+  and checked against a real Rekor v2 checkpoint and the log key from Sigstore's
+  trusted root.
+
 ## 1.0.0
 
 First public release. Parse, verify and sign signed notes — the format Go's sumdb
